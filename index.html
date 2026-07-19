@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mental Imagery Ability Assessment</title>
+  <style>
+    :root {
+      --bg-start: #f4f8ff;
+      --bg-end: #f8f5ff;
+      --card: rgba(255, 255, 255, 0.9);
+      --card-solid: #ffffff;
+      --primary: #6576d8;
+      --primary-dark: #5364c2;
+      --primary-light: #eef0ff;
+      --secondary: #6ca8a0;
+      --text: #26324b;
+      --muted: #6e7890;
+      --border: #e4e8f2;
+      --shadow: 0 18px 48px rgba(72, 83, 133, 0.12);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(161, 211, 218, 0.3), transparent 25%),
+        radial-gradient(circle at 92% 8%, rgba(184, 176, 238, 0.32), transparent 26%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app-shell {
+      width: min(100% - 32px, 1020px);
+      margin: 0 auto;
+      padding: 36px 0;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), #8c79d9);
+      box-shadow: 0 8px 18px rgba(101, 118, 216, 0.24);
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid rgba(228, 232, 242, 0.92);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Home page */
+    .hero {
+      display: grid;
+      min-height: 610px;
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 64px 56px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 7px 12px;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 999px;
+      background: var(--primary-light);
+    }
+
+    .eyebrow::before {
+      width: 7px;
+      height: 7px;
+      content: "";
+      border-radius: 50%;
+      background: var(--secondary);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 580px;
+      margin-bottom: 18px;
+      font-size: clamp(34px, 4.4vw, 54px);
+      line-height: 1.18;
+      letter-spacing: -0.05em;
+    }
+
+    .hero-description {
+      max-width: 620px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.9;
+    }
+
+    .notice {
+      display: flex;
+      gap: 10px;
+      max-width: 620px;
+      margin-bottom: 32px;
+      padding: 13px 15px;
+      color: #66728a;
+      font-size: 13px;
+      line-height: 1.7;
+      border: 1px solid #e4e8f4;
+      border-radius: var(--radius-sm);
+      background: rgba(248, 249, 255, 0.84);
+    }
+
+    .notice-icon {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 22px;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 700;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: #fff;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), #7a70d1);
+      box-shadow: 0 10px 20px rgba(101, 118, 216, 0.24);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 14px 24px rgba(101, 118, 216, 0.32);
+    }
+
+    .btn-secondary {
+      color: var(--primary-dark);
+      border-color: #dde1f5;
+      background: #f8f9ff;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: #cdd3f2;
+      background: #f1f3ff;
+    }
+
+    .hero-visual {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.82), transparent 30%),
+        linear-gradient(160deg, rgba(224, 238, 248, 0.92), rgba(232, 227, 250, 0.76));
+    }
+
+    .orbital {
+      position: relative;
+      width: min(100%, 330px);
+      margin: 0 auto;
+      aspect-ratio: 1;
+    }
+
+    .orbit,
+    .orbit::before,
+    .orbit::after {
+      position: absolute;
+      border: 1px solid rgba(101, 118, 216, 0.24);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .orbit {
+      inset: 10%;
+    }
+
+    .orbit::before {
+      inset: 14%;
+    }
+
+    .orbit::after {
+      inset: 28%;
+    }
+
+    .visual-core {
+      position: absolute;
+      inset: 33%;
+      display: grid;
+      color: #fff;
+      font-size: 45px;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8391df, #79aaa8);
+      box-shadow: 0 15px 30px rgba(101, 118, 216, 0.25);
+    }
+
+    .dot {
+      position: absolute;
+      display: grid;
+      width: 46px;
+      height: 46px;
+      color: var(--primary-dark);
+      font-size: 21px;
+      place-items: center;
+      border: 1px solid rgba(226, 230, 246, 0.94);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 18px rgba(85, 97, 144, 0.11);
+    }
+
+    .dot-1 { top: 5%; left: 44%; }
+    .dot-2 { top: 33%; right: 2%; }
+    .dot-3 { right: 18%; bottom: 5%; }
+    .dot-4 { bottom: 7%; left: 12%; }
+    .dot-5 { top: 30%; left: 1%; }
+
+    .quick-facts {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .fact {
+      padding: 14px 8px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.52);
+    }
+
+    .fact strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--primary-dark);
+      font-size: 20px;
+    }
+
+    .fact span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Quiz page */
+    .quiz-panel {
+      padding: 38px;
+    }
+
+    .quiz-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .quiz-topbar h2 {
+      margin-bottom: 4px;
+      font-size: 25px;
+    }
+
+    .dimension-badge {
+      display: inline-flex;
+      padding: 7px 11px;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 999px;
+      background: var(--primary-light);
+    }
+
+    .question-count {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      height: 9px;
+      overflow: hidden;
+      margin-bottom: 34px;
+      border-radius: 999px;
+      background: #edf0f7;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 5%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      transition: width 250ms ease;
+    }
+
+    .question-card {
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card-solid);
+    }
+
+    .question-number {
+      margin-bottom: 11px;
+      color: var(--secondary);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .question-text {
+      margin-bottom: 25px;
+      font-size: 22px;
+      line-height: 1.65;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .option:hover {
+      transform: translateX(3px);
+      border-color: #cbd2f2;
+      background: #fbfbff;
+    }
+
+    .option.selected {
+      border-color: #aeb8ed;
+      background: #f3f5ff;
+    }
+
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option-score {
+      display: grid;
+      flex: 0 0 auto;
+      width: 31px;
+      height: 31px;
+      color: var(--primary-dark);
+      font-size: 14px;
+      font-weight: 700;
+      place-items: center;
+      border-radius: 50%;
+      background: #f0f2fb;
+      transition: color 180ms ease, background 180ms ease;
+    }
+
+    .option.selected .option-score {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .option-label {
+      color: #4f5a72;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .quiz-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .completion-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Results page */
+    .result-panel {
+      padding: 38px;
+    }
+
+    .result-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 5px 0 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-heading h2 {
+      margin-bottom: 7px;
+      font-size: 31px;
+    }
+
+    .result-heading p {
+      margin-bottom: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .score-summary {
+      display: flex;
+      min-width: 188px;
+      align-items: baseline;
+      justify-content: center;
+      gap: 5px;
+      padding: 16px 20px;
+      color: #fff;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), #7b73d0);
+      box-shadow: 0 13px 26px rgba(101, 118, 216, 0.24);
+    }
+
+    .total-score {
+      font-size: 50px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-limit {
+      font-size: 15px;
+      opacity: 0.78;
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 24px;
+      margin-top: 25px;
+      grid-template-columns: minmax(280px, 0.92fr) minmax(340px, 1.08fr);
+    }
+
+    .result-card {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: #fff;
+    }
+
+    .result-card h3 {
+      margin-bottom: 18px;
+      font-size: 17px;
+    }
+
+    .chart-wrap {
+      display: grid;
+      min-height: 356px;
+      place-items: center;
+    }
+
+    #radarChart {
+      width: 100%;
+      max-width: 410px;
+      height: 340px;
+    }
+
+    .dimension-list {
+      display: grid;
+      gap: 19px;
+    }
+
+    .dimension-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .dimension-name {
+      font-weight: 700;
+    }
+
+    .dimension-value {
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .score-track {
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 6px;
+      border-radius: 999px;
+      background: #edf0f6;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #87bbb4, #7c88d9);
+    }
+
+    .dimension-level {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .disclaimer {
+      margin: 25px 0 0;
+      padding-top: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 10;
+      padding: 12px 18px;
+      color: #fff;
+      font-size: 14px;
+      border-radius: 10px;
+      background: rgba(54, 66, 101, 0.94);
+      box-shadow: 0 10px 25px rgba(45, 55, 86, 0.2);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 820px) {
+      .app-shell {
+        padding: 20px 0;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+      }
+
+      .hero-content {
+        padding: 46px 32px 36px;
+      }
+
+      .hero-visual {
+        padding: 26px 32px 35px;
+      }
+
+      .orbital {
+        width: 230px;
+      }
+
+      .quiz-panel,
+      .result-panel {
+        padding: 24px;
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app-shell {
+        width: min(100% - 20px, 1020px);
+        padding: 14px 0;
+      }
+
+      .page-header {
+        margin: 4px 4px 14px;
+      }
+
+      h1 {
+        font-size: 35px;
+      }
+
+      .hero-content {
+        padding: 34px 22px 26px;
+      }
+
+      .hero-visual {
+        padding: 19px 22px 27px;
+      }
+
+      .quick-facts {
+        gap: 6px;
+      }
+
+      .fact {
+        padding: 11px 5px;
+      }
+
+      .quiz-panel,
+      .result-panel {
+        padding: 17px;
+      }
+
+      .quiz-topbar {
+        align-items: start;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .progress-track {
+        margin-bottom: 20px;
+      }
+
+      .question-card {
+        padding: 20px 16px;
+      }
+
+      .question-text {
+        font-size: 18px;
+      }
+
+      .option {
+        align-items: flex-start;
+      }
+
+      .option-score {
+        margin-top: 1px;
+      }
+
+      .quiz-footer {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .completion-note {
+        text-align: center;
+      }
+
+      .nav-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .result-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .score-summary {
+        min-width: 0;
+      }
+
+      .chart-wrap {
+        min-height: 300px;
+      }
+
+      #radarChart {
+        height: 290px;
+      }
+
+      .result-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="page-header">
+      <div class="brand-mark">MI</div>
+      <div>
+        <p class="brand-title">Mental Imagery Assessment</p>
+        <p class="brand-subtitle">Self-Assessment Tool</p>
+      </div>
+    </header>
+
+    <!-- Home page: test purpose and basic information -->
+    <section id="homePage" class="panel hero">
+      <div class="hero-content">
+        <span class="eyebrow">Classroom Learning · Self-Discovery</span>
+        <h1>Mental Imagery Ability Assessment</h1>
+        <p class="hero-description">
+          This assessment explores your ability to form, maintain, control, and experience mental imagery across five core dimensions.
+        </p>
+        <div class="notice">
+          <span class="notice-icon">i</span>
+          <span>This assessment is intended for learning and preliminary self-reflection only. It is not a clinical diagnostic tool.</span>
+        </div>
+        <button id="startBtn" class="btn btn-primary" type="button">Start Assessment <span>→</span></button>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="orbital">
+          <div class="orbit"></div>
+          <div class="visual-core">◉</div>
+          <div class="dot dot-1">☀</div>
+          <div class="dot dot-2">♫</div>
+          <div class="dot dot-3">◇</div>
+          <div class="dot dot-4">≈</div>
+          <div class="dot dot-5">✦</div>
+        </div>
+        <div class="quick-facts">
+          <div class="fact"><strong>20</strong><span>Questions</span></div>
+          <div class="fact"><strong>5</strong><span>Dimensions</span></div>
+          <div class="fact"><strong>3-5</strong><span>Minutes</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz page: one question at a time -->
+    <section id="quizPage" class="panel quiz-panel hidden">
+      <div class="quiz-topbar">
+        <div>
+          <h2>Mental Imagery Assessment</h2>
+          <span id="dimensionBadge" class="dimension-badge"></span>
+        </div>
+        <span id="questionCount" class="question-count"></span>
+      </div>
+      <div class="progress-track" aria-label="Assessment progress">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <article class="question-card">
+        <p id="questionNumber" class="question-number"></p>
+        <h3 id="questionText" class="question-text"></h3>
+        <div id="options" class="options" role="radiogroup" aria-label="Choose the option that best describes your experience"></div>
+      </article>
+
+      <div class="quiz-footer">
+        <span id="completionNote" class="completion-note"></span>
+        <div class="nav-buttons">
+          <button id="prevBtn" class="btn btn-secondary" type="button">← Previous</button>
+          <button id="nextBtn" class="btn btn-primary" type="button">Next →</button>
+          <button id="submitBtn" class="btn btn-primary hidden" type="button">Submit Assessment</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results page: interpretation, dimension details, and radar chart -->
+    <section id="resultPage" class="panel result-panel hidden">
+      <div class="result-heading">
+        <div>
+          <span class="eyebrow">Assessment Complete</span>
+          <h2 id="overallTitle">Your Assessment Results</h2>
+          <p id="overallDescription"></p>
+        </div>
+        <div class="score-summary">
+          <span id="totalScore" class="total-score">0</span>
+          <span class="score-limit">/ 100 pts</span>
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <h3>Five-Dimension Profile</h3>
+          <div class="chart-wrap">
+            <canvas id="radarChart" aria-label="Radar chart showing scores across five mental imagery dimensions"></canvas>
+          </div>
+        </div>
+        <div class="result-card">
+          <h3>Dimension Score Details</h3>
+          <div id="dimensionList" class="dimension-list"></div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="restartBtn" class="btn btn-secondary" type="button">↻ Restart Assessment</button>
+        <button id="copyBtn" class="btn btn-primary" type="button">Copy Results</button>
+      </div>
+
+      <p class="disclaimer">
+        Disclaimer: This assessment is intended only for classroom learning and self-understanding. It cannot replace professional psychological assessment or clinical diagnosis.
+      </p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Five assessment dimensions, each containing four questions.
+    const dimensions = [
+      {
+        name: "Visual Clarity",
+        questions: [
+          "Imagine the face of a friend you know well. Can you clearly see their facial features?",
+          "Imagine a large tree. Can you clearly see its trunk, leaves, and overall shape?",
+          "Imagine the changing colors of the sky at sunrise. Can you see the scene clearly?",
+          "Imagine your bedroom. Can you clearly see the room layout and the positions of objects?"
+        ]
+      },
+      {
+        name: "Multisensory Imagery",
+        questions: [
+          "Imagine the sound of rain. Can you \"hear\" the rainfall in your mind?",
+          "Imagine the taste of a lemon. Can you sense its sourness?",
+          "Imagine the scent of flowers or perfume. Can you experience the smell in your mind?",
+          "Imagine touching an ice cube. Can you sense its coldness?"
+        ]
+      },
+      {
+        name: "Imagery Control",
+        questions: [
+          "Imagine a red apple, then change it to green. Can you make that change?",
+          "Imagine a cube rotating in your mind. Can you control its movement?",
+          "Imagine a car moving from far away toward you. Can you control how the scene changes?",
+          "Imagine a room, then dim the lights. Can you actively alter the image?"
+        ]
+      },
+      {
+        name: "Imagery Stability",
+        questions: [
+          "Imagine a familiar photograph. Can you hold the image in your mind for about 10 seconds?",
+          "Imagine a simple shape, such as a triangle. Can you keep it stable without it disappearing?",
+          "Imagine yourself walking around a school campus. Can the scene continue for a while?",
+          "When you imagine a scene, does it usually remain stable without easily fading, blurring, or being interrupted?"
+        ]
+      },
+      {
+        name: "Emotional Immersion",
+        questions: [
+          "Imagine a happy experience. Can you feel the positive emotions again?",
+          "Imagine yourself standing by the sea. Can you experience a sense of being there?",
+          "Imagine a stressful exam situation. Can you feel some degree of tension?",
+          "Imagine entering a familiar restaurant. Can you sense the atmosphere of the environment?"
+        ]
+      }
+    ];
+
+    const scaleOptions = [
+      "No imagery at all; I only know what I am thinking about",
+      "Very vague and unclear imagery",
+      "Some imagery, but fairly ordinary",
+      "Relatively clear and vivid imagery",
+      "Extremely clear imagery, close to a real experience"
+    ];
+
+    // Flatten the nested question groups for one-at-a-time display.
+    const questions = dimensions.flatMap((dimension, dimensionIndex) =>
+      dimension.questions.map((text) => ({
+        text,
+        dimensionIndex,
+        dimensionName: dimension.name
+      }))
+    );
+
+    let currentQuestion = 0;
+    let answers = Array(questions.length).fill(null);
+    let latestResult = null;
+    let toastTimer = null;
+
+    const homePage = document.getElementById("homePage");
+    const quizPage = document.getElementById("quizPage");
+    const resultPage = document.getElementById("resultPage");
+    const dimensionBadge = document.getElementById("dimensionBadge");
+    const questionCount = document.getElementById("questionCount");
+    const progressBar = document.getElementById("progressBar");
+    const questionNumber = document.getElementById("questionNumber");
+    const questionText = document.getElementById("questionText");
+    const options = document.getElementById("options");
+    const completionNote = document.getElementById("completionNote");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const submitBtn = document.getElementById("submitBtn");
+
+    document.getElementById("startBtn").addEventListener("click", startTest);
+    document.getElementById("restartBtn").addEventListener("click", restartTest);
+    document.getElementById("copyBtn").addEventListener("click", copyResult);
+    prevBtn.addEventListener("click", showPreviousQuestion);
+    nextBtn.addEventListener("click", showNextQuestion);
+    submitBtn.addEventListener("click", submitTest);
+    window.addEventListener("resize", () => {
+      if (latestResult && !resultPage.classList.contains("hidden")) {
+        drawRadarChart(latestResult.dimensionScores);
+      }
+    });
+
+    function switchPage(pageToShow) {
+      [homePage, quizPage, resultPage].forEach((page) => page.classList.add("hidden"));
+      pageToShow.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function startTest() {
+      switchPage(quizPage);
+      renderQuestion();
+    }
+
+    function restartTest() {
+      currentQuestion = 0;
+      answers = Array(questions.length).fill(null);
+      latestResult = null;
+      switchPage(homePage);
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestion];
+      const answeredCount = answers.filter((answer) => answer !== null).length;
+      const isLastQuestion = currentQuestion === questions.length - 1;
+
+      dimensionBadge.textContent = question.dimensionName;
+      questionCount.textContent = `Question ${currentQuestion + 1} / ${questions.length}`;
+      questionNumber.textContent = `QUESTION ${String(currentQuestion + 1).padStart(2, "0")}`;
+      questionText.textContent = question.text;
+      progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+      completionNote.textContent = `Completed ${answeredCount} / ${questions.length}`;
+
+      options.innerHTML = "";
+      scaleOptions.forEach((label, index) => {
+        const score = index + 1;
+        const option = document.createElement("label");
+        option.className = `option${answers[currentQuestion] === score ? " selected" : ""}`;
+        option.innerHTML = `
+          <input type="radio" name="answer" value="${score}" ${answers[currentQuestion] === score ? "checked" : ""}>
+          <span class="option-score">${score}</span>
+          <span class="option-label">${label}</span>
+        `;
+        option.querySelector("input").addEventListener("change", () => selectAnswer(score));
+        options.appendChild(option);
+      });
+
+      prevBtn.disabled = currentQuestion === 0;
+      nextBtn.classList.toggle("hidden", isLastQuestion);
+      submitBtn.classList.toggle("hidden", !isLastQuestion);
+      nextBtn.disabled = answers[currentQuestion] === null;
+      submitBtn.disabled = answers.some((answer) => answer === null);
+    }
+
+    function selectAnswer(score) {
+      answers[currentQuestion] = score;
+      renderQuestion();
+    }
+
+    function showPreviousQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion -= 1;
+        renderQuestion();
+      }
+    }
+
+    function showNextQuestion() {
+      if (answers[currentQuestion] === null) {
+        showToast("Please select an option first");
+        return;
+      }
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion += 1;
+        renderQuestion();
+      }
+    }
+
+    function getOverallLevel(totalScore) {
+      if (totalScore <= 39) return "Relatively Weak Mental Imagery Ability";
+      if (totalScore <= 59) return "Moderately Weak Mental Imagery Ability";
+      if (totalScore <= 79) return "Moderately Strong Mental Imagery Ability";
+      return "Strong Mental Imagery Ability";
+    }
+
+    function getDimensionLevel(score) {
+      if (score <= 8) return "Relatively weak in this dimension";
+      if (score <= 14) return "Moderate in this dimension";
+      return "Relatively strong in this dimension";
+    }
+
+    function submitTest() {
+      if (answers.some((answer) => answer === null)) {
+        showToast("Please complete all questions before submitting");
+        return;
+      }
+
+      const dimensionScores = dimensions.map((_, dimensionIndex) =>
+        questions.reduce((sum, question, questionIndex) => {
+          return question.dimensionIndex === dimensionIndex ? sum + answers[questionIndex] : sum;
+        }, 0)
+      );
+      const totalScore = dimensionScores.reduce((sum, score) => sum + score, 0);
+
+      latestResult = {
+        totalScore,
+        overallLevel: getOverallLevel(totalScore),
+        dimensionScores
+      };
+
+      renderResult();
+      switchPage(resultPage);
+      requestAnimationFrame(() => drawRadarChart(dimensionScores));
+    }
+
+    function renderResult() {
+      const { totalScore, overallLevel, dimensionScores } = latestResult;
+      document.getElementById("totalScore").textContent = totalScore;
+      document.getElementById("overallTitle").textContent = overallLevel;
+      document.getElementById("overallDescription").textContent =
+        "These results reflect your self-reported experience across different mental imagery dimensions and can serve as a starting point for further reflection.";
+
+      document.getElementById("dimensionList").innerHTML = dimensions.map((dimension, index) => {
+        const score = dimensionScores[index];
+        return `
+          <div class="dimension-item">
+            <div class="dimension-header">
+              <span class="dimension-name">${dimension.name}</span>
+              <span class="dimension-value">${score} / 20 pts</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width: ${score * 5}%"></div>
+            </div>
+            <p class="dimension-level">${getDimensionLevel(score)}</p>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Draw the radar chart with Canvas so the page also works offline.
+    function drawRadarChart(scores) {
+      const canvas = document.getElementById("radarChart");
+      const context = canvas.getContext("2d");
+      const ratio = window.devicePixelRatio || 1;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const centerX = width / 2;
+      const centerY = height / 2 + 4;
+      const radius = Math.min(width, height) * 0.31;
+      const axisCount = dimensions.length;
+      const angleOffset = -Math.PI / 2;
+
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      context.clearRect(0, 0, width, height);
+      context.lineJoin = "round";
+
+      function getPoint(value, index) {
+        const angle = angleOffset + (Math.PI * 2 * index) / axisCount;
+        const distance = radius * value;
+        return {
+          x: centerX + Math.cos(angle) * distance,
+          y: centerY + Math.sin(angle) * distance
+        };
+      }
+
+      // Draw five reference grid layers.
+      for (let layer = 1; layer <= 5; layer += 1) {
+        context.beginPath();
+        for (let index = 0; index < axisCount; index += 1) {
+          const point = getPoint(layer / 5, index);
+          index === 0 ? context.moveTo(point.x, point.y) : context.lineTo(point.x, point.y);
+        }
+        context.closePath();
+        context.strokeStyle = layer === 5 ? "#cfd5e8" : "#e8ebf4";
+        context.lineWidth = 1;
+        context.stroke();
+      }
+
+      // Draw axes and labels.
+      dimensions.forEach((dimension, index) => {
+        const axisEnd = getPoint(1, index);
+        const labelPoint = getPoint(1.3, index);
+        context.beginPath();
+        context.moveTo(centerX, centerY);
+        context.lineTo(axisEnd.x, axisEnd.y);
+        context.strokeStyle = "#e0e4ef";
+        context.stroke();
+
+        context.fillStyle = "#59647a";
+        context.font = '13px "Segoe UI", Arial, sans-serif';
+        // Center and constrain labels so they stay within the canvas on narrow screens.
+        const labelWidth = context.measureText(dimension.name).width;
+        const labelX = Math.min(Math.max(labelPoint.x, labelWidth / 2 + 3), width - labelWidth / 2 - 3);
+        context.textAlign = "center";
+        context.textBaseline = labelPoint.y < centerY ? "bottom" : "top";
+        context.fillText(dimension.name, labelX, labelPoint.y);
+      });
+
+      // Draw the data area from the five dimension scores.
+      context.beginPath();
+      scores.forEach((score, index) => {
+        const point = getPoint(score / 20, index);
+        index === 0 ? context.moveTo(point.x, point.y) : context.lineTo(point.x, point.y);
+      });
+      context.closePath();
+      context.fillStyle = "rgba(101, 118, 216, 0.2)";
+      context.strokeStyle = "#6576d8";
+      context.lineWidth = 2;
+      context.fill();
+      context.stroke();
+
+      scores.forEach((score, index) => {
+        const point = getPoint(score / 20, index);
+        context.beginPath();
+        context.arc(point.x, point.y, 4, 0, Math.PI * 2);
+        context.fillStyle = "#6576d8";
+        context.fill();
+        context.strokeStyle = "#ffffff";
+        context.lineWidth = 2;
+        context.stroke();
+      });
+    }
+
+    async function copyResult() {
+      if (!latestResult) return;
+
+      const lines = [
+        "Mental Imagery Ability Assessment Results",
+        `Total Score: ${latestResult.totalScore} / 100 pts`,
+        `Overall Level: ${latestResult.overallLevel}`,
+        "",
+        ...dimensions.map((dimension, index) => {
+          const score = latestResult.dimensionScores[index];
+          return `${dimension.name}: ${score} / 20 pts (${getDimensionLevel(score)})`;
+        }),
+        "",
+        "Disclaimer: This assessment is intended only for classroom learning and self-understanding. It cannot replace professional psychological assessment or clinical diagnosis."
+      ];
+
+      try {
+        await navigator.clipboard.writeText(lines.join("\n"));
+        showToast("Results copied to clipboard");
+      } catch (error) {
+        // Some browsers restrict the Clipboard API for local files. Use a legacy fallback.
+        const textArea = document.createElement("textarea");
+        textArea.value = lines.join("\n");
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        textArea.remove();
+        showToast("Results copied to clipboard");
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+  </script>
+</body>
+</html>

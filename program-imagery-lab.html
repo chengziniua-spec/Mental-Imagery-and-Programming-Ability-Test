@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imagery Compiler: Program Design Lab</title>
+  <style>
+    :root {
+      --bg: #f6f8f9;
+      --surface: #ffffff;
+      --surface-2: #eef3f4;
+      --ink: #16242d;
+      --muted: #63727c;
+      --line: #d8e0e4;
+      --teal: #168d83;
+      --coral: #dc6f58;
+      --blue: #386da8;
+      --gold: #bd8b13;
+      --green: #5d8d52;
+      --red: #bf4b42;
+      --shadow: 0 18px 44px rgba(21, 36, 45, 0.12);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background:
+        linear-gradient(90deg, rgba(22, 36, 45, 0.045) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(22, 36, 45, 0.045) 1px, transparent 1px),
+        var(--bg);
+      background-size: 32px 32px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: min(100% - 28px, 1440px);
+      margin: 0 auto;
+      padding: 22px 0 34px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      place-items: center;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      box-shadow: 0 10px 24px rgba(22, 141, 131, 0.24);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.4vw, 34px);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .home-link {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 13px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 750;
+      text-decoration: none;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .workspace {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 286px minmax(420px, 1fr) 322px;
+      align-items: start;
+    }
+
+    .panel,
+    .stage,
+    .slots-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .panel h2,
+    .slots-panel h2 {
+      margin: 0 0 13px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .challenge-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 17px;
+    }
+
+    .challenge-btn {
+      display: grid;
+      width: 100%;
+      gap: 3px;
+      padding: 12px;
+      cursor: pointer;
+      color: var(--ink);
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .challenge-btn:hover {
+      transform: translateY(-1px);
+      border-color: #b9c9cf;
+    }
+
+    .challenge-btn[aria-pressed="true"] {
+      border-color: rgba(22, 141, 131, 0.52);
+      background: #edf8f6;
+    }
+
+    .challenge-btn strong {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .challenge-btn span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .brief {
+      display: grid;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .brief-title {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .brief-text,
+    .source-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .metric-strip {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .metric {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .stage {
+      overflow: hidden;
+    }
+
+    .stage-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .stage-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .coherence {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 750;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      white-space: nowrap;
+    }
+
+    .coherence-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .coherence[data-level="forming"] .coherence-dot {
+      background: var(--gold);
+    }
+
+    .coherence[data-level="coherent"] .coherence-dot {
+      background: var(--green);
+    }
+
+    .machine-wrap {
+      padding: 14px;
+      background:
+        linear-gradient(180deg, #fdfefe, #eef4f5);
+    }
+
+    .machine {
+      display: block;
+      width: 100%;
+      min-height: 420px;
+      border: 1px solid #ccd8dd;
+      border-radius: var(--radius);
+      background: #f9fbfb;
+    }
+
+    .stage-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px 18px 16px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 13px;
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 760;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: #b9c9cf;
+    }
+
+    .btn-primary {
+      color: #ffffff;
+      border-color: var(--teal);
+      background: var(--teal);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #107970;
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    .deck {
+      display: grid;
+      gap: 9px;
+    }
+
+    .token {
+      display: grid;
+      width: 100%;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      cursor: grab;
+      color: var(--ink);
+      text-align: left;
+      border: 1px solid var(--line);
+      border-left-width: 5px;
+      border-radius: var(--radius);
+      background: #ffffff;
+      transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    }
+
+    .token:hover,
+    .token.is-selected {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(21, 36, 45, 0.1);
+    }
+
+    .token.is-selected {
+      outline: 3px solid rgba(56, 109, 168, 0.22);
+    }
+
+    .token:active {
+      cursor: grabbing;
+    }
+
+    .token-mark {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 850;
+      place-items: center;
+      border-radius: 6px;
+      background: var(--token-color, var(--blue));
+    }
+
+    .token strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .token span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .research-map {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .map-row {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 9px;
+      align-items: start;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .map-row::before {
+      width: 10px;
+      height: 10px;
+      margin-top: 4px;
+      content: "";
+      border-radius: 3px;
+      background: var(--map-color, var(--teal));
+    }
+
+    .slots-panel {
+      grid-column: 1 / -1;
+      padding: 18px;
+    }
+
+    .slots-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .slot {
+      min-height: 126px;
+      padding: 12px;
+      cursor: pointer;
+      border: 1px dashed #aebdc4;
+      border-top: 5px solid var(--slot-color, var(--blue));
+      border-radius: var(--radius);
+      background: #ffffff;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+
+    .slot:hover,
+    .slot.is-over {
+      transform: translateY(-1px);
+      border-color: var(--slot-color, var(--blue));
+      background: #fbfdfd;
+    }
+
+    .slot.is-filled {
+      border-style: solid;
+    }
+
+    .slot.is-correct {
+      background: #f1faf2;
+    }
+
+    .slot.is-wrong {
+      background: #fff5f2;
+    }
+
+    .slot-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 820;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .slot-status {
+      color: var(--slot-color, var(--blue));
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .slot-value {
+      min-height: 42px;
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 780;
+      line-height: 1.35;
+    }
+
+    .slot-cue {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .trace {
+      display: grid;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 13px;
+      color: #23343d;
+      font-size: 13px;
+      line-height: 1.55;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+
+    .trace strong {
+      color: var(--ink);
+    }
+
+    .svg-grid {
+      fill: url(#gridPattern);
+    }
+
+    .svg-shell {
+      fill: #ffffff;
+      stroke: #c9d6dc;
+      stroke-width: 2;
+    }
+
+    .svg-title {
+      fill: #16242d;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .svg-small {
+      fill: #63727c;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .lens-layer {
+      opacity: 0.2;
+      transition: opacity 240ms ease, filter 240ms ease;
+    }
+
+    .lens-layer.active {
+      opacity: 1;
+    }
+
+    .lens-layer.wrong {
+      opacity: 0.55;
+      filter: url(#roughen);
+    }
+
+    .goal-fill { fill: #ffe9e2; stroke: var(--coral); }
+    .structure-fill { fill: #e8f6f4; stroke: var(--teal); }
+    .flow-fill { fill: #eaf1fb; stroke: var(--blue); }
+    .state-fill { fill: #fff5db; stroke: var(--gold); }
+    .failure-fill { fill: #fde9e5; stroke: var(--red); }
+
+    .node {
+      stroke-width: 2;
+    }
+
+    .node-text {
+      fill: #1d2c34;
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .node-subtext {
+      fill: #566873;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .program-line {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 5;
+    }
+
+    .program-line.flow {
+      stroke: var(--blue);
+      stroke-dasharray: 12 12;
+    }
+
+    .program-line.intent {
+      stroke: var(--coral);
+      stroke-width: 4;
+    }
+
+    .program-line.failure {
+      stroke: var(--red);
+      stroke-width: 4;
+      stroke-dasharray: 8 9;
+    }
+
+    .memory-cell {
+      fill: #fff9e7;
+      stroke: var(--gold);
+      stroke-width: 2;
+    }
+
+    .pulse {
+      opacity: 0;
+      fill: var(--blue);
+    }
+
+    .machine.simulating .program-line.flow {
+      animation: lineTravel 900ms linear infinite;
+    }
+
+    .machine.simulating .program-line.failure {
+      animation: lineTravel 1100ms linear infinite;
+    }
+
+    .machine.simulating .pulse {
+      animation: pulseBlink 1200ms ease-in-out infinite;
+    }
+
+    @keyframes lineTravel {
+      to {
+        stroke-dashoffset: -48;
+      }
+    }
+
+    @keyframes pulseBlink {
+      0%, 100% {
+        opacity: 0.2;
+        transform: scale(0.92);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.12);
+      }
+    }
+
+    @media (max-width: 1120px) {
+      .workspace {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stage {
+        grid-column: 1 / -1;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .app {
+        width: min(100% - 18px, 1440px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .machine {
+        min-height: 330px;
+      }
+
+      .stage-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .btn-row {
+        justify-content: stretch;
+      }
+
+      .btn {
+        flex: 1;
+      }
+
+      .slots-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand h1 {
+        font-size: 24px;
+      }
+
+      .stage-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .metric-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .machine-wrap {
+        padding: 9px;
+      }
+
+      .machine {
+        min-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">IC</div>
+        <div>
+          <h1>Imagery Compiler</h1>
+          <p>Mental imagery in program design and visual programming</p>
+        </div>
+      </div>
+      <a class="home-link" href="index.html">Open original assessment</a>
+    </header>
+
+    <section class="workspace" aria-label="Program imagery game workspace">
+      <aside class="panel">
+        <h2>Design Briefs</h2>
+        <div id="challengeList" class="challenge-list"></div>
+
+        <div class="brief">
+          <h2 id="briefTitle" class="brief-title"></h2>
+          <p id="briefText" class="brief-text"></p>
+          <div class="metric-strip">
+            <div class="metric">
+              <span>Slots filled</span>
+              <strong id="filledMetric">0/5</strong>
+            </div>
+            <div class="metric">
+              <span>Coherence</span>
+              <strong id="scoreMetric">0</strong>
+            </div>
+          </div>
+          <p class="source-note">Modelled from themes in Petre and Blackwell, 1999, and Petre, 2009.</p>
+        </div>
+      </aside>
+
+      <section class="stage" aria-label="Visual programming imagery output">
+        <div class="stage-head">
+          <h2>Program Image</h2>
+          <div id="coherenceBadge" class="coherence" data-level="fragmented">
+            <span class="coherence-dot"></span>
+            <span id="coherenceText">Fragmented</span>
+          </div>
+        </div>
+
+        <div class="machine-wrap">
+          <svg id="machineSvg" class="machine" viewBox="0 0 900 560" role="img" aria-label="Dynamic program design visualization">
+            <defs>
+              <pattern id="gridPattern" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#dce7ea" stroke-width="1"/>
+              </pattern>
+              <filter id="roughen">
+                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="1" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2"/>
+              </filter>
+              <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#386da8"/>
+              </marker>
+              <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#bf4b42"/>
+              </marker>
+              <marker id="arrowCoral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc6f58"/>
+              </marker>
+            </defs>
+
+            <rect class="svg-grid" x="0" y="0" width="900" height="560"/>
+            <rect class="svg-shell" x="34" y="30" width="832" height="500" rx="8"/>
+            <text class="svg-title" x="64" y="72">mental image to runnable design</text>
+            <text id="svgPremise" class="svg-small" x="64" y="98"></text>
+
+            <g id="layerIntention" class="lens-layer" data-layer="intention">
+              <path class="program-line intent" d="M 450 118 C 392 154 340 178 284 204" marker-end="url(#arrowCoral)"/>
+              <path class="program-line intent" d="M 450 118 C 506 154 560 178 616 204" marker-end="url(#arrowCoral)"/>
+              <rect class="node goal-fill" x="330" y="92" width="240" height="54" rx="8"/>
+              <text class="node-text" x="450" y="124" text-anchor="middle" id="svgIntention">Intention image</text>
+            </g>
+
+            <g id="layerStructure" class="lens-layer" data-layer="structure">
+              <rect class="node structure-fill" x="120" y="192" width="160" height="72" rx="8"/>
+              <rect class="node structure-fill" x="370" y="192" width="160" height="72" rx="8"/>
+              <rect class="node structure-fill" x="620" y="192" width="160" height="72" rx="8"/>
+              <line class="program-line" x1="280" y1="228" x2="370" y2="228" stroke="#168d83" marker-end="url(#arrowBlue)"/>
+              <line class="program-line" x1="530" y1="228" x2="620" y2="228" stroke="#168d83" marker-end="url(#arrowBlue)"/>
+              <text class="node-text" x="200" y="222" text-anchor="middle" id="svgStructureA">Input</text>
+              <text class="node-subtext" x="200" y="242" text-anchor="middle">source</text>
+              <text class="node-text" x="450" y="222" text-anchor="middle" id="svgStructureB">Model</text>
+              <text class="node-subtext" x="450" y="242" text-anchor="middle">relation</text>
+              <text class="node-text" x="700" y="222" text-anchor="middle" id="svgStructureC">Output</text>
+              <text class="node-subtext" x="700" y="242" text-anchor="middle">effect</text>
+            </g>
+
+            <g id="layerFlow" class="lens-layer" data-layer="flow">
+              <path id="flowPath" class="program-line flow" d="M 158 334 C 235 286 312 286 390 334 S 546 382 624 334 S 742 298 790 344" marker-end="url(#arrowBlue)"/>
+              <circle class="pulse" cx="158" cy="334" r="12"/>
+              <circle class="pulse" cx="390" cy="334" r="9"/>
+              <circle class="pulse" cx="624" cy="334" r="9"/>
+              <rect class="node flow-fill" x="110" y="312" width="104" height="48" rx="8"/>
+              <rect class="node flow-fill" x="338" y="312" width="104" height="48" rx="8"/>
+              <rect class="node flow-fill" x="568" y="312" width="112" height="48" rx="8"/>
+              <rect class="node flow-fill" x="728" y="322" width="96" height="48" rx="8"/>
+              <text class="node-text" x="162" y="342" text-anchor="middle" id="svgFlowA">step 1</text>
+              <text class="node-text" x="390" y="342" text-anchor="middle" id="svgFlowB">step 2</text>
+              <text class="node-text" x="624" y="342" text-anchor="middle" id="svgFlowC">step 3</text>
+              <text class="node-text" x="776" y="352" text-anchor="middle" id="svgFlowD">done</text>
+            </g>
+
+            <g id="layerState" class="lens-layer" data-layer="state">
+              <rect class="memory-cell" x="140" y="410" width="620" height="74" rx="8"/>
+              <line x1="330" y1="410" x2="330" y2="484" stroke="#d7b95d" stroke-width="2"/>
+              <line x1="540" y1="410" x2="540" y2="484" stroke="#d7b95d" stroke-width="2"/>
+              <text class="node-subtext" x="176" y="432">state image</text>
+              <text class="node-text" x="235" y="460" text-anchor="middle" id="svgStateA">memory</text>
+              <text class="node-text" x="435" y="460" text-anchor="middle" id="svgStateB">flags</text>
+              <text class="node-text" x="650" y="460" text-anchor="middle" id="svgStateC">history</text>
+            </g>
+
+            <g id="layerFailure" class="lens-layer" data-layer="failure">
+              <path class="program-line failure" d="M 624 360 C 612 402 575 416 540 446" marker-end="url(#arrowRed)"/>
+              <path class="program-line failure" d="M 390 360 C 382 402 350 416 330 446" marker-end="url(#arrowRed)"/>
+              <rect class="node failure-fill" x="602" y="96" width="186" height="58" rx="8"/>
+              <text class="node-text" x="695" y="130" text-anchor="middle" id="svgFailure">Failure image</text>
+              <line x1="650" y1="154" x2="650" y2="192" stroke="#bf4b42" stroke-width="3" stroke-dasharray="7 8"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="stage-actions">
+          <span id="stageStatus" class="brief-text">No imagery layers placed yet.</span>
+          <div class="btn-row">
+            <button id="resetBtn" class="btn" type="button">Reset</button>
+            <button id="runBtn" class="btn btn-primary" type="button" disabled>Run simulation</button>
+            <button id="nextBtn" class="btn" type="button">Next brief</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Imagery Deck</h2>
+        <div id="tokenDeck" class="deck"></div>
+
+        <div class="research-map">
+          <h2>Research Map</h2>
+          <div class="map-row" style="--map-color: var(--coral)">Private images carry intention before code exists.</div>
+          <div class="map-row" style="--map-color: var(--teal)">External diagrams help when they preserve abstraction.</div>
+          <div class="map-row" style="--map-color: var(--blue)">Dynamic traces turn static structure into imagined execution.</div>
+          <div class="map-row" style="--map-color: var(--gold)">State images anchor variables, constraints, and history.</div>
+          <div class="map-row" style="--map-color: var(--red)">Failure images make edge cases visible early.</div>
+        </div>
+      </aside>
+
+      <section class="slots-panel" aria-label="Mental imagery slots">
+        <h2>Mental Workbench</h2>
+        <div id="slotsGrid" class="slots-grid"></div>
+        <div id="traceLog" class="trace">
+          <strong>Trace log</strong>
+          <span>Select imagery tokens to compose a program image.</span>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const lenses = [
+      {
+        id: "intention",
+        label: "Intention",
+        cue: "The promise or purpose the program is trying to preserve.",
+        color: "var(--coral)"
+      },
+      {
+        id: "structure",
+        label: "Structure",
+        cue: "The objects, modules, and relations held as a spatial image.",
+        color: "var(--teal)"
+      },
+      {
+        id: "flow",
+        label: "Flow",
+        cue: "The imagined movement of data, control, and events.",
+        color: "var(--blue)"
+      },
+      {
+        id: "state",
+        label: "State",
+        cue: "The memory of values, flags, constraints, and time.",
+        color: "var(--gold)"
+      },
+      {
+        id: "failure",
+        label: "Failure",
+        cue: "The branch where the imagined program breaks or recovers.",
+        color: "var(--red)"
+      }
+    ];
+
+    const challenges = [
+      {
+        title: "Checkout Gate",
+        tag: "transactions",
+        premise: "A cart becomes a durable order only when stock, payment, and receipt agree.",
+        targets: {
+          intention: "chk-intent",
+          structure: "chk-structure",
+          flow: "chk-flow",
+          state: "chk-state",
+          failure: "chk-failure"
+        },
+        tokens: [
+          { id: "chk-intent", lens: "intention", mark: "IN", name: "Paid order promise", detail: "the user leaves with one trusted order", svg: "paid order" },
+          { id: "chk-structure", lens: "structure", mark: "ST", name: "Cart, stock, payment, order", detail: "four parts with negotiated boundaries", svg: ["Cart", "Payment", "Order"] },
+          { id: "chk-flow", lens: "flow", mark: "FL", name: "Validate, reserve, charge, confirm", detail: "a sequence with no invisible leap", svg: ["validate", "reserve", "charge", "confirm"] },
+          { id: "chk-state", lens: "state", mark: "SA", name: "cartId, hold, paymentStatus", detail: "the values that must stay synchronized", svg: ["cartId", "hold", "status"] },
+          { id: "chk-failure", lens: "failure", mark: "FA", name: "Rollback on payment fail", detail: "a visible recovery path", svg: "rollback" },
+          { id: "chk-noise-1", lens: "noise", mark: "NO", name: "Receipt font pairing", detail: "surface styling without program behavior", svg: "font" },
+          { id: "chk-noise-2", lens: "noise", mark: "NO", name: "Database logo first", detail: "implementation brand before design image", svg: "logo" },
+          { id: "chk-noise-3", lens: "noise", mark: "NO", name: "Button color palette", detail: "visual polish without computation", svg: "color" }
+        ],
+        insight: "The checkout image works when intention, sequence, state, and rollback can be simulated together."
+      },
+      {
+        title: "Live Classroom Quiz",
+        tag: "streams",
+        premise: "Answers stream in, the teacher view updates, and late replies remain traceable.",
+        targets: {
+          intention: "quiz-intent",
+          structure: "quiz-structure",
+          flow: "quiz-flow",
+          state: "quiz-state",
+          failure: "quiz-failure"
+        },
+        tokens: [
+          { id: "quiz-intent", lens: "intention", mark: "IN", name: "Shared attention loop", detail: "students and teacher see the same moment", svg: "shared loop" },
+          { id: "quiz-structure", lens: "structure", mark: "ST", name: "Student, queue, aggregator, board", detail: "a social system with a buffering center", svg: ["Student", "Queue", "Board"] },
+          { id: "quiz-flow", lens: "flow", mark: "FL", name: "Submit, score, broadcast", detail: "events become collective feedback", svg: ["submit", "score", "send", "show"] },
+          { id: "quiz-state", lens: "state", mark: "SA", name: "attempt, timestamp, room", detail: "identity and time make the stream accountable", svg: ["attempt", "time", "room"] },
+          { id: "quiz-failure", lens: "failure", mark: "FA", name: "Late packet quarantine", detail: "late events are visible without corrupting the board", svg: "late path" },
+          { id: "quiz-noise-1", lens: "noise", mark: "NO", name: "Mascot animation", detail: "energy without design leverage", svg: "mascot" },
+          { id: "quiz-noise-2", lens: "noise", mark: "NO", name: "One giant variable", detail: "everything stored but nothing imaginable", svg: "var" },
+          { id: "quiz-noise-3", lens: "noise", mark: "NO", name: "Profile avatar crop", detail: "identity detail before system behavior", svg: "avatar" }
+        ],
+        insight: "The quiz image becomes useful when the stream has a public path and a protected late-event path."
+      },
+      {
+        title: "Image Filter Pipeline",
+        tag: "media",
+        premise: "A source image passes through reversible filters with preview and export.",
+        targets: {
+          intention: "filter-intent",
+          structure: "filter-structure",
+          flow: "filter-flow",
+          state: "filter-state",
+          failure: "filter-failure"
+        },
+        tokens: [
+          { id: "filter-intent", lens: "intention", mark: "IN", name: "See changes before commit", detail: "the user can imagine the edit before losing the original", svg: "preview first" },
+          { id: "filter-structure", lens: "structure", mark: "ST", name: "Source, filters, preview, export", detail: "a layered image-production chain", svg: ["Source", "Filter", "Export"] },
+          { id: "filter-flow", lens: "flow", mark: "FL", name: "Load, transform, preview, save", detail: "pixels move through reversible steps", svg: ["load", "tweak", "view", "save"] },
+          { id: "filter-state", lens: "state", mark: "SA", name: "History stack and active filter", detail: "the present view remembers its path", svg: ["stack", "filter", "view"] },
+          { id: "filter-failure", lens: "failure", mark: "FA", name: "Undo protects original", detail: "recovery is part of the design image", svg: "undo" },
+          { id: "filter-noise-1", lens: "noise", mark: "NO", name: "Random frame decoration", detail: "a border without computational meaning", svg: "frame" },
+          { id: "filter-noise-2", lens: "noise", mark: "NO", name: "File name as design", detail: "a label that cannot carry behavior", svg: "name" },
+          { id: "filter-noise-3", lens: "noise", mark: "NO", name: "Filter count trophy", detail: "quantity instead of visible transformation", svg: "count" }
+        ],
+        insight: "The filter image is coherent when preview, history, and recovery stay visible as the pipeline runs."
+      }
+    ];
+
+    const lensColorById = Object.fromEntries(lenses.map((lens) => [lens.id, lens.color]));
+    let challengeIndex = 0;
+    let selectedTokenId = null;
+    let placements = {};
+    let simulationTimer = null;
+
+    const challengeList = document.getElementById("challengeList");
+    const briefTitle = document.getElementById("briefTitle");
+    const briefText = document.getElementById("briefText");
+    const tokenDeck = document.getElementById("tokenDeck");
+    const slotsGrid = document.getElementById("slotsGrid");
+    const traceLog = document.getElementById("traceLog");
+    const filledMetric = document.getElementById("filledMetric");
+    const scoreMetric = document.getElementById("scoreMetric");
+    const runBtn = document.getElementById("runBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const machineSvg = document.getElementById("machineSvg");
+    const stageStatus = document.getElementById("stageStatus");
+    const coherenceBadge = document.getElementById("coherenceBadge");
+    const coherenceText = document.getElementById("coherenceText");
+
+    resetBtn.addEventListener("click", resetBoard);
+    nextBtn.addEventListener("click", () => {
+      challengeIndex = (challengeIndex + 1) % challenges.length;
+      resetBoard();
+    });
+    runBtn.addEventListener("click", runSimulation);
+
+    render();
+
+    function currentChallenge() {
+      return challenges[challengeIndex];
+    }
+
+    function render() {
+      renderChallengeList();
+      renderBrief();
+      renderDeck();
+      renderSlots();
+      updateMetrics();
+      updateMachine();
+    }
+
+    function renderChallengeList() {
+      challengeList.innerHTML = "";
+      challenges.forEach((challenge, index) => {
+        const button = document.createElement("button");
+        button.className = "challenge-btn";
+        button.type = "button";
+        button.setAttribute("aria-pressed", String(index === challengeIndex));
+        button.innerHTML = `<strong>${challenge.title}</strong><span>${challenge.tag}</span>`;
+        button.addEventListener("click", () => {
+          challengeIndex = index;
+          resetBoard();
+        });
+        challengeList.appendChild(button);
+      });
+    }
+
+    function renderBrief() {
+      const challenge = currentChallenge();
+      briefTitle.textContent = challenge.title;
+      briefText.textContent = challenge.premise;
+      document.getElementById("svgPremise").textContent = challenge.premise;
+    }
+
+    function renderDeck() {
+      const placed = new Set(Object.values(placements));
+      tokenDeck.innerHTML = "";
+      currentChallenge().tokens
+        .filter((token) => !placed.has(token.id))
+        .forEach((token) => {
+          const button = document.createElement("button");
+          button.className = `token${selectedTokenId === token.id ? " is-selected" : ""}`;
+          button.type = "button";
+          button.draggable = true;
+          button.style.setProperty("--token-color", lensColorById[token.lens] || "#6f7b84");
+          button.style.borderLeftColor = lensColorById[token.lens] || "#6f7b84";
+          button.innerHTML = `
+            <span class="token-mark">${token.mark}</span>
+            <span><strong>${token.name}</strong><span>${token.detail}</span></span>
+          `;
+          button.addEventListener("click", () => {
+            selectedTokenId = selectedTokenId === token.id ? null : token.id;
+            renderDeck();
+          });
+          button.addEventListener("dragstart", (event) => {
+            selectedTokenId = token.id;
+            event.dataTransfer.setData("text/plain", token.id);
+            event.dataTransfer.effectAllowed = "move";
+          });
+          tokenDeck.appendChild(button);
+        });
+    }
+
+    function renderSlots() {
+      slotsGrid.innerHTML = "";
+      lenses.forEach((lens) => {
+        const token = getToken(placements[lens.id]);
+        const correct = token && currentChallenge().targets[lens.id] === token.id;
+        const filled = Boolean(token);
+        const slot = document.createElement("div");
+        slot.className = [
+          "slot",
+          filled ? "is-filled" : "",
+          correct ? "is-correct" : "",
+          filled && !correct ? "is-wrong" : ""
+        ].filter(Boolean).join(" ");
+        slot.style.setProperty("--slot-color", lens.color);
+        slot.setAttribute("role", "button");
+        slot.setAttribute("tabindex", "0");
+        slot.dataset.lens = lens.id;
+        slot.innerHTML = `
+          <div class="slot-label">
+            <span>${lens.label}</span>
+            <span class="slot-status">${filled ? (correct ? "aligned" : "noisy") : "empty"}</span>
+          </div>
+          <p class="slot-value">${token ? token.name : "Drop an imagery token"}</p>
+          <p class="slot-cue">${lens.cue}</p>
+        `;
+        slot.addEventListener("click", () => handleSlotClick(lens.id));
+        slot.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handleSlotClick(lens.id);
+          }
+        });
+        slot.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          slot.classList.add("is-over");
+          event.dataTransfer.dropEffect = "move";
+        });
+        slot.addEventListener("dragleave", () => slot.classList.remove("is-over"));
+        slot.addEventListener("drop", (event) => {
+          event.preventDefault();
+          slot.classList.remove("is-over");
+          placeToken(lens.id, event.dataTransfer.getData("text/plain"));
+        });
+        slotsGrid.appendChild(slot);
+      });
+    }
+
+    function handleSlotClick(lensId) {
+      if (selectedTokenId) {
+        placeToken(lensId, selectedTokenId);
+        return;
+      }
+      if (placements[lensId]) {
+        selectedTokenId = placements[lensId];
+        delete placements[lensId];
+        render();
+      }
+    }
+
+    function placeToken(lensId, tokenId) {
+      if (!getToken(tokenId)) return;
+
+      Object.keys(placements).forEach((slotId) => {
+        if (placements[slotId] === tokenId) delete placements[slotId];
+      });
+      placements[lensId] = tokenId;
+      selectedTokenId = null;
+      render();
+    }
+
+    function getToken(tokenId) {
+      return currentChallenge().tokens.find((token) => token.id === tokenId);
+    }
+
+    function getScore() {
+      return lenses.reduce((score, lens) => {
+        const tokenId = placements[lens.id];
+        if (!tokenId) return score;
+        return score + (currentChallenge().targets[lens.id] === tokenId ? 20 : 0);
+      }, 0);
+    }
+
+    function updateMetrics() {
+      const filledCount = Object.keys(placements).length;
+      const score = getScore();
+      filledMetric.textContent = `${filledCount}/5`;
+      scoreMetric.textContent = String(score);
+      runBtn.disabled = filledCount < lenses.length;
+
+      let level = "fragmented";
+      let label = "Fragmented";
+      if (score >= 60 && score < 100) {
+        level = "forming";
+        label = "Forming";
+      }
+      if (score === 100) {
+        level = "coherent";
+        label = "Coherent";
+      }
+      coherenceBadge.dataset.level = level;
+      coherenceText.textContent = label;
+
+      if (filledCount === 0) {
+        stageStatus.textContent = "No imagery layers placed yet.";
+      } else if (score === 100) {
+        stageStatus.textContent = "The internal image is ready to run as a design trace.";
+      } else {
+        stageStatus.textContent = `${filledCount} imagery layers placed, ${score} coherence points.`;
+      }
+    }
+
+    function updateMachine() {
+      const challenge = currentChallenge();
+      setLayerState("Intention", "intention");
+      setLayerState("Structure", "structure");
+      setLayerState("Flow", "flow");
+      setLayerState("State", "state");
+      setLayerState("Failure", "failure");
+
+      const intention = getToken(placements.intention);
+      const structure = getToken(placements.structure);
+      const flow = getToken(placements.flow);
+      const state = getToken(placements.state);
+      const failure = getToken(placements.failure);
+
+      document.getElementById("svgIntention").textContent = svgText(intention, "Intention image");
+      setSvgSeries("svgStructure", structure && structure.svg, ["Input", "Model", "Output"]);
+      setSvgSeries("svgFlow", flow && flow.svg, ["step 1", "step 2", "step 3", "done"]);
+      setSvgSeries("svgState", state && state.svg, ["memory", "flags", "history"]);
+      document.getElementById("svgFailure").textContent = svgText(failure, "Failure image");
+
+      traceLog.innerHTML = getTraceText(challenge);
+    }
+
+    function setLayerState(name, lensId) {
+      const layer = document.getElementById(`layer${name}`);
+      const token = getToken(placements[lensId]);
+      const correct = token && currentChallenge().targets[lensId] === token.id;
+      layer.classList.toggle("active", Boolean(token));
+      layer.classList.toggle("wrong", Boolean(token && !correct));
+    }
+
+    function setSvgSeries(prefix, values, defaults) {
+      const list = Array.isArray(values) ? values : [];
+      defaults.forEach((fallback, index) => {
+        const suffix = String.fromCharCode(65 + index);
+        const element = document.getElementById(`${prefix}${suffix}`);
+        if (element) element.textContent = list[index] || fallback;
+      });
+    }
+
+    function svgText(token, fallback) {
+      if (!token) return fallback;
+      if (Array.isArray(token.svg)) return token.svg[0] || token.name;
+      return token.svg || token.name;
+    }
+
+    function getTraceText(challenge) {
+      const score = getScore();
+      const filledCount = Object.keys(placements).length;
+      if (filledCount === 0) {
+        return "<strong>Trace log</strong><span>Select imagery tokens to compose a program image.</span>";
+      }
+      if (filledCount < lenses.length) {
+        return `<strong>Trace log</strong><span>${filledCount} of 5 mental images are externalized. The program picture is still partial.</span>`;
+      }
+      if (score === 100) {
+        return `<strong>Trace log</strong><span>${challenge.insight}</span><span>The diagram now links private intention, visual structure, simulated flow, remembered state, and a recovery path.</span>`;
+      }
+      return `<strong>Trace log</strong><span>The image runs, but ${5 - score / 20} layer(s) conflict with the brief. The visual program shows noise before it becomes code.</span>`;
+    }
+
+    function resetBoard() {
+      placements = {};
+      selectedTokenId = null;
+      machineSvg.classList.remove("simulating");
+      clearTimeout(simulationTimer);
+      render();
+    }
+
+    function runSimulation() {
+      machineSvg.classList.add("simulating");
+      const score = getScore();
+      const challenge = currentChallenge();
+      if (score === 100) {
+        traceLog.innerHTML = `<strong>Running mental simulation</strong><span>${challenge.insight}</span><span>The trace stays legible because every visual layer serves the same design intention.</span>`;
+      } else {
+        traceLog.innerHTML = `<strong>Running mental simulation</strong><span>The trace exposes a mismatch: one or more images are decorative, misplaced, or too low-level for the design task.</span>`;
+      }
+      clearTimeout(simulationTimer);
+      simulationTimer = setTimeout(() => {
+        machineSvg.classList.remove("simulating");
+      }, 3600);
+    }
+  </script>
+</body>
+</html>

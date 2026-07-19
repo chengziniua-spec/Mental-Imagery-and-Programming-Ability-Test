@@ -1,0 +1,163 @@
+.scaffold-panel {
+  border: 1px solid #d8e0e4;
+  border-radius: 10px;
+  background: #f8fafb;
+  padding: 14px 16px;
+}
+
+.scaffold-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.scaffold-hint {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #63727c;
+}
+
+.cfc-code {
+  font-family: "Fira Code", Consolas, monospace;
+  font-size: 13px;
+  background: #16242d;
+  color: #e8eef0;
+  border-radius: 8px;
+  padding: 10px 0;
+  overflow-x: auto;
+}
+
+.cfc-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1px 12px;
+  white-space: pre;
+  transition: opacity 0.15s ease;
+}
+
+.cfc-bar {
+  width: 6px;
+  align-self: stretch;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.cfc-lineno {
+  color: #63727c;
+  width: 18px;
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.cfc-text {
+  white-space: pre;
+}
+
+.cfc-line-dimmed {
+  opacity: 0.35;
+}
+
+.et-scroll {
+  overflow-x: auto;
+}
+
+.et-current-ring {
+  animation: et-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes et-pulse {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.vst-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+
+.vst-table th,
+.vst-table td {
+  border: 1px solid #d8e0e4;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.vst-step {
+  color: #63727c;
+  font-weight: 600;
+}
+
+.vst-table input {
+  width: 64px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+}
+
+.vst-table input:focus {
+  outline: 2px solid #168d83;
+  border-radius: 4px;
+}
+
+.vst-row-current td {
+  background: #eaf5f3;
+}
+
+.vst-row-current .vst-step {
+  color: #168d83;
+  position: relative;
+}
+
+.vst-row-current .vst-step::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #168d83;
+}
+
+.glossary-panel {
+  margin-top: 4px;
+}
+
+.glossary-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.glossary-entry {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.glossary-entry dt {
+  flex: 0 0 auto;
+}
+
+.glossary-entry dt code {
+  background: #eef3f4;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.glossary-entry dd {
+  margin: 0;
+  font-size: 13px;
+  color: #46565d;
+}
