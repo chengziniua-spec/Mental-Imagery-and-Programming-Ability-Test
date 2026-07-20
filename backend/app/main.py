@@ -11,15 +11,31 @@ from .database import Base, SessionLocal, engine
 from .routers import admin, admin_auth, export, imagery, imagery_tasks, parsons, participants, tasks, trials
 
 
-def seed_tasks_if_empty():
+def _sync_seed_rows(db, model, seed_rows):
+    """Insert new seed rows and update existing ones in place, keyed by id.
+
+    Content in seed_tasks.py / seed_parsons_problems.py gets edited over time
+    (wording fixes, new items); a plain "seed if empty" check would leave a
+    database that was already seeded once permanently stuck on stale content.
+    Updating in place (rather than delete+recreate) keeps existing trial rows'
+    foreign keys valid.
+    """
+    existing = {row.id: row for row in db.query(model).all()}
+    for seed in seed_rows:
+        row = existing.get(seed["id"])
+        if row is None:
+            db.add(model(**seed))
+        else:
+            for key, value in seed.items():
+                setattr(row, key, value)
+    db.commit()
+
+
+def sync_seed_tasks():
     db = SessionLocal()
     try:
-        if db.query(models.TracingTask).count() == 0:
-            db.add_all(models.TracingTask(**task) for task in SEED_TASKS)
-            db.commit()
-        if db.query(models.ParsonsProblem).count() == 0:
-            db.add_all(models.ParsonsProblem(**problem) for problem in SEED_PARSONS_PROBLEMS)
-            db.commit()
+        _sync_seed_rows(db, models.TracingTask, SEED_TASKS)
+        _sync_seed_rows(db, models.ParsonsProblem, SEED_PARSONS_PROBLEMS)
     finally:
         db.close()
 
@@ -27,7 +43,7 @@ def seed_tasks_if_empty():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
-    seed_tasks_if_empty()
+    sync_seed_tasks()
     yield
 
 

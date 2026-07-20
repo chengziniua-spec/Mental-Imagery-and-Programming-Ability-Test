@@ -43,19 +43,19 @@ SEED_TASKS = [
         ],
         "trace_steps": [
             {
-                "line": 3, "iteration_label": "i=1", "prompt": "What is total after this iteration?",
+                "line": 3, "iteration_label": "i=1", "prompt": "The loop just ran with i=1. What is total now?",
                 "fields": [{"name": "total", "type": "number"}], "expected": {"total": 1},
             },
             {
-                "line": 3, "iteration_label": "i=2", "prompt": "What is total after this iteration?",
+                "line": 3, "iteration_label": "i=2", "prompt": "The loop just ran with i=2. What is total now?",
                 "fields": [{"name": "total", "type": "number"}], "expected": {"total": 3},
             },
             {
-                "line": 3, "iteration_label": "i=3", "prompt": "What is total after this iteration?",
+                "line": 3, "iteration_label": "i=3", "prompt": "The loop just ran with i=3. What is total now?",
                 "fields": [{"name": "total", "type": "number"}], "expected": {"total": 6},
             },
             {
-                "line": 3, "iteration_label": "i=4", "prompt": "What is total after this iteration?",
+                "line": 3, "iteration_label": "i=4", "prompt": "The loop just ran with i=4 (final pass). What is total now?",
                 "fields": [{"name": "total", "type": "number"}], "expected": {"total": 10},
             },
         ],
@@ -167,27 +167,27 @@ SEED_TASKS = [
         ],
         "trace_steps": [
             {
-                "line": 4, "iteration_label": "i=0, j=0", "prompt": "What is count after this iteration?",
+                "line": 4, "iteration_label": "i=0, j=0", "prompt": "The inner loop just checked i=0, j=0. What is count now?",
                 "fields": [{"name": "count", "type": "number"}], "expected": {"count": 1},
             },
             {
-                "line": 4, "iteration_label": "i=0, j=1", "prompt": "What is count after this iteration?",
+                "line": 4, "iteration_label": "i=0, j=1", "prompt": "The inner loop just checked i=0, j=1. What is count now?",
                 "fields": [{"name": "count", "type": "number"}], "expected": {"count": 1},
             },
             {
-                "line": 4, "iteration_label": "i=1, j=0", "prompt": "What is count after this iteration?",
+                "line": 4, "iteration_label": "i=1, j=0", "prompt": "The inner loop just checked i=1, j=0. What is count now?",
                 "fields": [{"name": "count", "type": "number"}], "expected": {"count": 1},
             },
             {
-                "line": 4, "iteration_label": "i=1, j=1", "prompt": "What is count after this iteration?",
+                "line": 4, "iteration_label": "i=1, j=1", "prompt": "The inner loop just checked i=1, j=1. What is count now?",
                 "fields": [{"name": "count", "type": "number"}], "expected": {"count": 2},
             },
             {
-                "line": 4, "iteration_label": "i=2, j=0", "prompt": "What is count after this iteration?",
+                "line": 4, "iteration_label": "i=2, j=0", "prompt": "The inner loop just checked i=2, j=0. What is count now?",
                 "fields": [{"name": "count", "type": "number"}], "expected": {"count": 3},
             },
             {
-                "line": 4, "iteration_label": "i=2, j=1", "prompt": "What is count after this iteration?",
+                "line": 4, "iteration_label": "i=2, j=1", "prompt": "The inner loop just checked i=2, j=1 (final pass). What is count now?",
                 "fields": [{"name": "count", "type": "number"}], "expected": {"count": 3},
             },
         ],
