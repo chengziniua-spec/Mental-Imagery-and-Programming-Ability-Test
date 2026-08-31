@@ -3,6 +3,7 @@
   border-radius: 10px;
   background: #f8fafb;
   padding: 14px 16px;
+  min-width: 0;
 }
 
 .scaffold-title {
@@ -168,6 +169,54 @@
   height: 6px;
   border-radius: 50%;
   background: #168d83;
+}
+
+.vst-row-extra {
+  background: #fbfcfc;
+}
+
+.vst-step-input {
+  width: 56px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+  color: inherit;
+}
+
+.vst-step-input:focus {
+  outline: 2px solid #168d83;
+  border-radius: 4px;
+}
+
+.vst-remove-row-btn {
+  border: none;
+  background: transparent;
+  color: #9fb2bd;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.vst-remove-row-btn:hover {
+  color: #c0392b;
+}
+
+.vst-add-row-btn {
+  margin-top: 8px;
+  border: 1px dashed #b7c3c8;
+  border-radius: 6px;
+  background: transparent;
+  color: #46565d;
+  font-size: 12px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.vst-add-row-btn:hover {
+  border-color: #168d83;
+  color: #168d83;
 }
 
 .glossary-panel {
