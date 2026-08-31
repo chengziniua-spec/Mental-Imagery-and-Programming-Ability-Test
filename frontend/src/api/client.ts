@@ -74,7 +74,13 @@ export function submitStep(
 export function finishTrial(
   participantId: string,
   trialId: number,
-  payload: { confidence: number; reasoning_tags: string[]; explanation?: string },
+  payload: {
+    confidence: number;
+    reasoning_tags: string[];
+    explanation?: string;
+    scaffold_open_count: number;
+    scaffold_open_ms: number;
+  },
 ): Promise<unknown> {
   return request(`/api/participants/${participantId}/trials/${trialId}/finish`, {
     method: "PATCH",

@@ -124,6 +124,8 @@ class TrialFinishIn(BaseModel):
     confidence: int
     reasoning_tags: list[str] = []
     explanation: Optional[str] = None
+    scaffold_open_count: int = 0
+    scaffold_open_ms: int = 0
 
 
 class TracingTrialOut(BaseModel):
@@ -140,6 +142,8 @@ class TracingTrialOut(BaseModel):
     confidence: Optional[int]
     reasoning_tags: Optional[list[str]]
     explanation: Optional[str]
+    scaffold_open_count: int
+    scaffold_open_ms: int
     submitted_at: datetime
 
 
@@ -182,6 +186,8 @@ class TrialDetailOut(BaseModel):
     confidence: Optional[int]
     reasoning_tags: Optional[list[str]]
     explanation: Optional[str]
+    scaffold_open_count: int
+    scaffold_open_ms: int
     submitted_at: datetime
     step_answers: list[StepAnswerDetailOut]
 
@@ -218,6 +224,8 @@ class ConditionStats(BaseModel):
     accuracy: Optional[float]
     avg_confidence: Optional[float]
     avg_completion_time_ms: Optional[float]
+    avg_scaffold_open_count: Optional[float] = None
+    avg_scaffold_open_ms: Optional[float] = None
 
 
 class ImageryTaskStats(BaseModel):
@@ -262,3 +270,8 @@ class StatsOut(BaseModel):
     mental_rotation: ImageryTaskStats
     picture_memory: ImageryTaskStats
     parsons: ImageryTaskStats
+    # Pearson r between each participant's avg scaffold-open count (their
+    # scaffolded-condition trials only) and their avg self-report score on
+    # that imagery dimension. Dimensions with fewer than 2 qualifying
+    # participants are omitted rather than reported as a meaningless r.
+    scaffold_usage_correlation: dict[str, float] = {}

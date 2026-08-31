@@ -77,6 +77,24 @@ export function StatsPanel({ includeTest }: { includeTest: boolean }) {
     },
   ];
 
+  const maxScaffoldOpens = Math.max(1, ...Object.values(stats.by_scaffold_type).map((s) => s.avg_scaffold_open_count ?? 0));
+  const scaffoldUsageItems = Object.entries(stats.by_scaffold_type).map(([key, s], index) => ({
+    label: SCAFFOLD_LABELS[key] ?? key,
+    value: s.avg_scaffold_open_count,
+    displayValue:
+      s.avg_scaffold_open_count === null
+        ? "–"
+        : `${s.avg_scaffold_open_count.toFixed(1)} opens/task (avg ${Math.round((s.avg_scaffold_open_ms ?? 0) / 1000)}s open)`,
+    colorVar: `--series-${index + 1}`,
+  }));
+
+  const correlationItems = Object.entries(stats.scaffold_usage_correlation).map(([key, r], index) => ({
+    label: DIMENSION_LABELS[key] ?? key,
+    value: Math.abs(r),
+    displayValue: `r = ${r >= 0 ? "+" : ""}${r.toFixed(2)}`,
+    colorVar: `--series-${index + 1}`,
+  }));
+
   const parsonsItems = [
     {
       label: "Parsons problems",
@@ -114,6 +132,16 @@ export function StatsPanel({ includeTest }: { includeTest: boolean }) {
       </div>
       <div className="admin-panel">
         <BarChart title="Accuracy by scaffold type" items={scaffoldItems} maxValue={1} />
+      </div>
+      <div className="admin-panel">
+        <BarChart title="Visual-aid opens per task (scaffolded conditions)" items={scaffoldUsageItems} maxValue={maxScaffoldOpens} />
+      </div>
+      <div className="admin-panel">
+        <BarChart
+          title="Visual-aid usage ↔ imagery ability (Pearson r, dashboard sanity check only)"
+          items={correlationItems}
+          maxValue={1}
+        />
       </div>
       <div className="admin-panel">
         <BarChart title="Imagery dimension averages (1-7 scale)" items={imageryItems} maxValue={7} />

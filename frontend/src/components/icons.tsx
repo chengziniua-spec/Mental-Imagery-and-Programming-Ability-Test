@@ -1,4 +1,4 @@
-import { Repeat, GitBranch, SquareFunction, Package, Variable, CheckCircle2, XCircle, Flame, Target } from "lucide-react";
+import { Repeat, GitBranch, SquareFunction, Package, Variable, CheckCircle2, XCircle, Flame, Target, Eye, EyeOff } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const TASK_TYPE_ICON: Record<string, LucideIcon> = {
@@ -9,7 +9,7 @@ export const TASK_TYPE_ICON: Record<string, LucideIcon> = {
   state: Package,
 };
 
-export { CheckCircle2, XCircle, Flame, Target };
+export { CheckCircle2, XCircle, Flame, Target, Eye, EyeOff };
 
 const DIFFICULTY_LEVEL: Record<string, number> = { easy: 1, medium: 2, hard: 3 };
 

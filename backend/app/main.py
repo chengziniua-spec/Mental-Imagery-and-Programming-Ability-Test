@@ -3,12 +3,33 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from . import models
 from .data.seed_tasks import SEED_TASKS
 from .data.seed_parsons_problems import SEED_PARSONS_PROBLEMS
 from .database import Base, SessionLocal, engine
 from .routers import admin, admin_auth, export, imagery, imagery_tasks, parsons, participants, tasks, trials
+
+
+def _ensure_columns(table_name: str, columns: dict[str, str]):
+    """Add any of `columns` ({name: SQL type}) missing from an already-existing table.
+
+    This project has no migration tool (no Alembic) -- Base.metadata.create_all()
+    only creates tables that don't exist yet, it never alters an existing table's
+    columns. Once a table has been seeded/used in production, a new nullable
+    column on its model needs this instead, or it silently never reaches the
+    already-created production table. ADD COLUMN syntax used here works
+    identically on SQLite (dev) and Postgres (prod).
+    """
+    inspector = inspect(engine)
+    if table_name not in inspector.get_table_names():
+        return  # fresh DB: create_all() will create it with all columns already
+    existing = {col["name"] for col in inspector.get_columns(table_name)}
+    with engine.begin() as conn:
+        for name, sql_type in columns.items():
+            if name not in existing:
+                conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {name} {sql_type}"))
 
 
 def _sync_seed_rows(db, model, seed_rows):
@@ -43,6 +64,10 @@ def sync_seed_tasks():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    _ensure_columns("tracing_trials", {
+        "scaffold_open_count": "INTEGER DEFAULT 0",
+        "scaffold_open_ms": "INTEGER DEFAULT 0",
+    })
     sync_seed_tasks()
     yield
 

@@ -5,7 +5,7 @@ import { ExecutionTimeline } from "./scaffolds/ExecutionTimeline";
 import { ControlFlowCues } from "./scaffolds/ControlFlowCues";
 import { GlossaryPanel } from "./GlossaryPanel";
 import { CodeBlock } from "./CodeBlock";
-import { TASK_TYPE_ICON, DifficultyMeter, CheckCircle2, XCircle } from "./icons";
+import { TASK_TYPE_ICON, DifficultyMeter, CheckCircle2, XCircle, Eye, EyeOff } from "./icons";
 import { REASONING_TAGS, OTHER_TAG_ID } from "../data/reasoningTags";
 
 export interface StepOutcome {
@@ -17,6 +17,8 @@ export interface TaskFinishPayload {
   confidence: number;
   reasoningTags: string[];
   explanation: string;
+  scaffoldOpenCount: number;
+  scaffoldOpenMs: number;
 }
 
 interface Props {
@@ -52,8 +54,12 @@ export function CodeTracingTask({ task, assignment, onStartTrial, onSubmitStep, 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [explanation, setExplanation] = useState("");
   const [correctCount, setCorrectCount] = useState(0);
+  const [scaffoldOpen, setScaffoldOpen] = useState(false);
   const stepStartedAt = useRef(performance.now());
   const hasAdvancedRef = useRef(false);
+  const scaffoldOpenCount = useRef(0);
+  const scaffoldOpenMs = useRef(0);
+  const scaffoldOpenedAt = useRef<number | null>(null);
 
   const step = task.steps[stepIndex];
 
@@ -124,10 +130,40 @@ export function CodeTracingTask({ task, assignment, onStartTrial, onSubmitStep, 
     setSelectedTags((prev) => (prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId]));
   };
 
+  // The scaffold panel is opt-in (click to reveal) rather than always-on, both so it reads as a
+  // deliberate tool instead of background wallpaper, and so "how much did they lean on it" becomes
+  // a clean, countable signal instead of a noisy mouse-hover proxy -- open count + cumulative open
+  // time across the whole task, flushed into the trial summary at handleFinish.
+  // (Side effects live outside the setState call, not inside a functional updater -- React's Strict
+  // Mode intentionally double-invokes updater functions in dev to catch exactly this kind of impurity.)
+  const toggleScaffold = () => {
+    if (scaffoldOpen) {
+      if (scaffoldOpenedAt.current !== null) {
+        scaffoldOpenMs.current += performance.now() - scaffoldOpenedAt.current;
+        scaffoldOpenedAt.current = null;
+      }
+      setScaffoldOpen(false);
+    } else {
+      scaffoldOpenCount.current += 1;
+      scaffoldOpenedAt.current = performance.now();
+      setScaffoldOpen(true);
+    }
+  };
+
   const handleFinish = async () => {
     if (confidence === null) return;
+    if (scaffoldOpenedAt.current !== null) {
+      scaffoldOpenMs.current += performance.now() - scaffoldOpenedAt.current;
+      scaffoldOpenedAt.current = null;
+    }
     setPhase("wrapup-submitting");
-    await onFinishTrial({ confidence, reasoningTags: selectedTags, explanation });
+    await onFinishTrial({
+      confidence,
+      reasoningTags: selectedTags,
+      explanation,
+      scaffoldOpenCount: scaffoldOpenCount.current,
+      scaffoldOpenMs: Math.round(scaffoldOpenMs.current),
+    });
     onContinue();
   };
 
@@ -219,12 +255,19 @@ export function CodeTracingTask({ task, assignment, onStartTrial, onSubmitStep, 
         {step.iteration_label ? ` · ${step.iteration_label}` : ""}
       </p>
 
-      <div className={scaffold ? "tracing-layout tracing-layout-split" : "tracing-layout"}>
+      {scaffold && (
+        <button type="button" className="scaffold-toggle-btn" onClick={toggleScaffold}>
+          {scaffoldOpen ? <EyeOff size={15} /> : <Eye size={15} />}
+          {scaffoldOpen ? "Hide visual aid" : "Show visual aid"}
+        </button>
+      )}
+
+      <div className={scaffold && scaffoldOpen ? "tracing-layout tracing-layout-split" : "tracing-layout"}>
         <div className="scaffold-panel code-panel">
           <h4 className="scaffold-title">Code</h4>
           <CodeBlock code={task.code} currentLine={step.line} />
         </div>
-        {scaffold}
+        {scaffold && scaffoldOpen && scaffold}
       </div>
 
       <GlossaryPanel entries={task.glossary} />

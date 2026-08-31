@@ -48,13 +48,64 @@ def _condition_stats(trials: list[models.TracingTrial]) -> schemas.ConditionStat
     correct_step_count = sum(t.correct_step_count for t in trials)
     confidences = [t.confidence for t in trials if t.confidence is not None]
     times = [t.completion_time_ms for t in trials if t.completion_time_ms is not None]
+    open_counts = [t.scaffold_open_count for t in trials]
+    open_durations = [t.scaffold_open_ms for t in trials]
     return schemas.ConditionStats(
         n=len(trials),
         step_n=step_count,
         accuracy=(correct_step_count / step_count) if step_count else None,
         avg_confidence=mean(confidences) if confidences else None,
         avg_completion_time_ms=mean(times) if times else None,
+        avg_scaffold_open_count=mean(open_counts) if open_counts else None,
+        avg_scaffold_open_ms=mean(open_durations) if open_durations else None,
     )
+
+
+def _pearson(xs: list[float], ys: list[float]) -> float | None:
+    n = len(xs)
+    if n < 2:
+        return None
+    mean_x, mean_y = mean(xs), mean(ys)
+    var_x = sum((x - mean_x) ** 2 for x in xs)
+    var_y = sum((y - mean_y) ** 2 for y in ys)
+    if var_x == 0 or var_y == 0:
+        return None  # no spread on one side -- correlation is undefined, not zero
+    cov = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys))
+    return cov / (var_x**0.5 * var_y**0.5)
+
+
+def _scaffold_usage_correlation(
+    scaffolded_trials: list[models.TracingTrial],
+    imagery_responses: list[models.ImageryResponse],
+    dimensions: set[str],
+) -> dict[str, float]:
+    """Pearson r, per imagery dimension, between a participant's average
+    scaffold-open count across their scaffolded-condition trials and their
+    average self-report score on that dimension. This is a dashboard sanity
+    check, not the dissertation's actual analysis -- the underlying per-trial
+    scaffold_open_count/scaffold_open_ms is also in the raw export for proper
+    statistical treatment (controlling for task difficulty, condition, etc.)."""
+    by_participant: dict[str, list[models.TracingTrial]] = {}
+    for t in scaffolded_trials:
+        by_participant.setdefault(t.participant_id, []).append(t)
+
+    imagery_by_participant: dict[str, list[models.ImageryResponse]] = {}
+    for r in imagery_responses:
+        imagery_by_participant.setdefault(r.participant_id, []).append(r)
+
+    result = {}
+    for dimension in dimensions:
+        xs, ys = [], []
+        for participant_id, trials in by_participant.items():
+            dim_values = [r.value for r in imagery_by_participant.get(participant_id, []) if r.dimension == dimension]
+            if not dim_values:
+                continue
+            xs.append(mean(t.scaffold_open_count for t in trials))
+            ys.append(mean(dim_values))
+        r = _pearson(xs, ys)
+        if r is not None:
+            result[dimension] = round(r, 3)
+    return result
 
 
 @router.get("/participants", response_model=list[schemas.ParticipantSummaryOut])
@@ -89,6 +140,8 @@ def get_participant_detail(participant_id: str, db: Session = Depends(get_db)):
             confidence=t.confidence,
             reasoning_tags=t.reasoning_tags,
             explanation=t.explanation,
+            scaffold_open_count=t.scaffold_open_count,
+            scaffold_open_ms=t.scaffold_open_ms,
             submitted_at=t.submitted_at,
             step_answers=[
                 schemas.StepAnswerDetailOut(
@@ -220,6 +273,10 @@ def get_stats(include_test: bool = False, db: Session = Depends(get_db)):
         avg_rt_ms=mean(parsons_times) if parsons_times else None,
     )
 
+    scaffold_usage_correlation = _scaffold_usage_correlation(
+        [t for t in all_trials if t.condition == "scaffolded"], imagery_responses, dimensions
+    )
+
     return schemas.StatsOut(
         total_participants=len(participants),
         total_trials=len(all_trials),
@@ -231,4 +288,5 @@ def get_stats(include_test: bool = False, db: Session = Depends(get_db)):
         mental_rotation=_imagery_task_stats("mental_rotation"),
         picture_memory=_imagery_task_stats("picture_memory"),
         parsons=parsons_stats,
+        scaffold_usage_correlation=scaffold_usage_correlation,
     )

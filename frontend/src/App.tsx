@@ -343,6 +343,8 @@ function App() {
         confidence: payload.confidence,
         reasoning_tags: payload.reasoningTags,
         explanation: payload.explanation || undefined,
+        scaffold_open_count: payload.scaffoldOpenCount,
+        scaffold_open_ms: payload.scaffoldOpenMs,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save this task's summary.");

@@ -76,6 +76,8 @@ def finish_trial(participant_id: str, trial_id: int, payload: schemas.TrialFinis
     trial.confidence = payload.confidence
     trial.reasoning_tags = payload.reasoning_tags
     trial.explanation = payload.explanation
+    trial.scaffold_open_count = payload.scaffold_open_count
+    trial.scaffold_open_ms = payload.scaffold_open_ms
     trial.finished_at = datetime.utcnow()
     trial.submitted_at = datetime.utcnow()
     db.commit()

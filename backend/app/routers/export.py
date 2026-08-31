@@ -45,6 +45,8 @@ def build_rows(db: Session, include_test: bool) -> list[dict]:
                 "trial_confidence": trial.confidence,
                 "trial_reasoning_tags": ";".join(trial.reasoning_tags) if trial.reasoning_tags else None,
                 "trial_explanation": trial.explanation,
+                "trial_scaffold_open_count": trial.scaffold_open_count,
+                "trial_scaffold_open_ms": trial.scaffold_open_ms,
                 "submitted_at": step.submitted_at.isoformat() if step.submitted_at else None,
             }
         )
@@ -64,7 +66,8 @@ def export_csv(include_test: bool = False, db: Session = Depends(get_db)):
         "participant_id", "programming_experience", "years_experience", "task_id",
         "task_type", "difficulty", "condition", "scaffold_type", "step_index", "line",
         "iteration_label", "step_correct", "step_completion_time_ms", "trial_correct",
-        "trial_confidence", "trial_reasoning_tags", "trial_explanation", "submitted_at",
+        "trial_confidence", "trial_reasoning_tags", "trial_explanation",
+        "trial_scaffold_open_count", "trial_scaffold_open_ms", "submitted_at",
     ]
     writer = csv.DictWriter(buffer, fieldnames=fieldnames)
     writer.writeheader()

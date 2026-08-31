@@ -160,6 +160,8 @@ export interface ConditionStats {
   accuracy: number | null;
   avg_confidence: number | null;
   avg_completion_time_ms: number | null;
+  avg_scaffold_open_count: number | null;
+  avg_scaffold_open_ms: number | null;
 }
 
 export interface ImageryTaskStats {
@@ -179,6 +181,7 @@ export interface Stats {
   mental_rotation: ImageryTaskStats;
   picture_memory: ImageryTaskStats;
   parsons: ImageryTaskStats;
+  scaffold_usage_correlation: Record<string, number>;
 }
 
 export function fetchParticipants(includeTest: boolean): Promise<ParticipantSummary[]> {

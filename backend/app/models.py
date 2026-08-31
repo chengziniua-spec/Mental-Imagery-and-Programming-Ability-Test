@@ -78,6 +78,11 @@ class TracingTrial(Base):
     confidence = Column(Integer, nullable=True)  # 1-7, rated once after all steps are done
     reasoning_tags = Column(JSON, nullable=True)  # e.g. ["mental_execution", "guessed"]
     explanation = Column(Text, nullable=True)  # free text, only meaningful when "other" is tagged
+    # The scaffold panel (scaffolded condition only) is opt-in/click-to-reveal, not always-on --
+    # these count how often and how long the participant chose to consult it across the whole task.
+    # Always 0 in the code_only condition (no scaffold panel exists there).
+    scaffold_open_count = Column(Integer, nullable=False, default=0)
+    scaffold_open_ms = Column(Integer, nullable=False, default=0)
     started_at = Column(DateTime, default=datetime.utcnow)
     finished_at = Column(DateTime, nullable=True)
     submitted_at = Column(DateTime, default=datetime.utcnow)

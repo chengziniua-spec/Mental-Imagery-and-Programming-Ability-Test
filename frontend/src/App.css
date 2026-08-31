@@ -246,6 +246,26 @@
   }
 }
 
+.scaffold-toggle-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid #168d83;
+  border-radius: 999px;
+  padding: 7px 16px;
+  background: #eaf5f3;
+  color: #106b63;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scaffold-toggle-btn:hover {
+  background: #168d83;
+  color: #fff;
+}
+
 .scaffold-panel.code-panel {
   background: #16242d;
 }
