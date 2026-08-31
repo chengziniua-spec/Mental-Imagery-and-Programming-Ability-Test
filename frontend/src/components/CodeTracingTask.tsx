@@ -106,7 +106,15 @@ export function CodeTracingTask({ task, assignment, onStartTrial, onSubmitStep, 
       case "state_table":
         return <VariableStateTable variableNames={allFieldNames} stepLabels={stepLabels} currentStepIndex={stepIndex} />;
       case "execution_timeline":
-        return <ExecutionTimeline code={task.code} currentLine={step.line} />;
+        return (
+          <ExecutionTimeline
+            code={task.code}
+            currentLine={step.line}
+            currentStepIndex={stepIndex}
+            iterationLabel={step.iteration_label}
+            visitedLines={task.steps.slice(0, stepIndex + 1).map((s) => s.line)}
+          />
+        );
       case "control_flow":
         return <ControlFlowCues code={task.code} currentLine={step.line} />;
       default:
